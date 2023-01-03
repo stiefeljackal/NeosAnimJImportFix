@@ -21,10 +21,8 @@ namespace JworkzNeosMod.Events.Watchers
             }
         }
 
-        public static int GetConsumedBytesFromId(FileId id)
-        {
-            return !IsWatchingFile(id) ? 0 : FileToConsumedBytesSizeDictionary[id];
-        }
+        public static int GetConsumedBytesFromId(FileId id) =>
+            !IsWatchingFile(id) ? 0 : FileToConsumedBytesSizeDictionary[id];
 
         public static void UpdateCacheValue(FileId id, int consumedByteSize)
         {
@@ -38,7 +36,7 @@ namespace JworkzNeosMod.Events.Watchers
         {
             if (FileToConsumedBytesSizeDictionary.ContainsKey(id))
             {
-                FileToConsumedBytesSizeDictionary.TryRemove(id, out int __);
+                FileToConsumedBytesSizeDictionary.TryRemove(id, out int _);
             }
         }
     }

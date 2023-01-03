@@ -26,11 +26,8 @@ namespace JworkzNeosMod
 
         public bool IsEnabled { get; private set; }
 
-        public override void DefineConfiguration(ModConfigurationDefinitionBuilder builder)
-        {
-            builder.Version(Version)
-                .AutoSave(false);
-        }
+        public override void DefineConfiguration(ModConfigurationDefinitionBuilder builder) =>
+            builder.Version(Version).AutoSave(false);
 
         public override void OnEngineInit()
         {
@@ -50,15 +47,9 @@ namespace JworkzNeosMod
             else { TurnModOff(); }
         }
 
-        private void TurnModOn()
-        {
-            harmony.PatchAll();
-        }
+        private void TurnModOn() => harmony.PatchAll();
 
-        private void TurnModOff()
-        {
-            harmony.UnpatchAll(harmony.Id);
-        }
+        private void TurnModOff() => harmony.UnpatchAll(harmony.Id);
 
         private void OnConfigurationChanged(ConfigurationChangedEvent @event) => RefreshMod();
 
