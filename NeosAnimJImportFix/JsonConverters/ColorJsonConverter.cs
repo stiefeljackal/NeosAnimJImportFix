@@ -4,6 +4,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NeosModLoader;
 using JworkzNeosMod.Extensions;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace JworkzNeosMod.JsonConverters
 {
@@ -13,15 +16,27 @@ namespace JworkzNeosMod.JsonConverters
 
         public override color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.StartObject)
+            color color;
+
+            switch (reader.TokenType)
             {
-                throw new JsonException();
+                case JsonTokenType.StartObject:
+                    color = ReadObject(ref reader);
+                    break;
+                default:
+                    throw new JsonException();
+
             }
 
-            var r = 0f;
-            var g = 0f;
-            var b = 0f;
-            var a = 1f;
+            return color;
+        }
+
+        private color ReadObject(ref Utf8JsonReader reader)
+        {
+            var r = BaseXStructExtensions.DEFAULT_R;
+            var g = BaseXStructExtensions.DEFAULT_G;
+            var b = BaseXStructExtensions.DEFAULT_B;
+            var a = BaseXStructExtensions.DEFAULT_A;
 
             while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
             {
@@ -55,7 +70,7 @@ namespace JworkzNeosMod.JsonConverters
 
             return new color(r, g, b, a);
         }
-
+        
         public override void Write(Utf8JsonWriter writer, color value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
