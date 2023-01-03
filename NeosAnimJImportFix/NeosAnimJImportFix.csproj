@@ -47,9 +47,6 @@
 	<Reference Include="System.Text.Json">
 		<HintPath>$(NeosPath)\System.Text.Json.dll</HintPath>
 	</Reference>
-	<Reference Include="System.ValueTuple">
-		<HintPath>$(NeosPath)Neos_Data\Managed\System.ValueTuple.dll</HintPath>
-	</Reference>
 	<Reference Include="System.Memory">
 		<HintPath>$(NeosPath)Neos_Data\Managed\System.Memory.dll</HintPath>
 	</Reference>
@@ -57,7 +54,7 @@
 		<HintPath>$(NeosPath)\System.Threading.Tasks.Extensions.dll</HintPath>
 	</Reference>
   </ItemGroup>
-
+	
   <ItemGroup>
     <Folder Include="Abstract\" />
   </ItemGroup>
