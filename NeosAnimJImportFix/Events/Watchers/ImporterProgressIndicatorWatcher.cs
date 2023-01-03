@@ -2,6 +2,7 @@
 using FrooxEngine;
 using JworkzNeosMod.Events;
 using JworkzNeosMod.Events.Publishers;
+using JworkzNeosMod.Events.Watchers;
 using JworkzNeosMod.Models;
 using NeosModLoader;
 using System;
@@ -34,22 +35,30 @@ namespace JworkzNeosMod.Watchers
         private static void SpawnIndicator(object _, Utf8ImportStartEventArgs args)
         {
             var world = args.World;
-            var indicatorSlot = world.LocalUserSpace.AddSlot($"Import {args.FileTypeName} Indicator");
-            indicatorSlot.PersistentSelf = false;
-            NeosLogoMenuProgress indicator = indicatorSlot.AttachComponent<NeosLogoMenuProgress>();
-            indicatorSlot.AttachComponent<DestroyOnUserLeave>().TargetUser.Target = world.LocalUser;
+            var id = args.Id;
+            var fileTypeName = args.FileTypeName;
 
-            var localUser = world.LocalUser;
-            var localUserGlobalPos = localUser.LocalUserSpace.GlobalPosition;
-            localUser.GetPointInFrontOfUser(out float3 spawnPoint, out floatQ rotation);
+            world.RunSynchronously(() =>
+            {
+                if (!Utf8JsonFileProgressWatcher.IsWatchingFile(id)) { return; }
 
-            indicator.Spawn(spawnPoint, 0.05f, true);
-            indicator.UpdateProgress(0.0f, $"Importing {args.FileTypeName}", string.Empty);
+                var indicatorSlot = world.LocalUserSpace.AddSlot($"Import {fileTypeName} Indicator");
+                indicatorSlot.PersistentSelf = false;
+                NeosLogoMenuProgress indicator = indicatorSlot.AttachComponent<NeosLogoMenuProgress>();
+                indicatorSlot.AttachComponent<DestroyOnUserLeave>().TargetUser.Target = world.LocalUser;
 
-            IdToIndicatorDictionary.TryAdd(args.Id, indicator.ReferenceID);
-            IndicatorToIdDictionary.TryAdd(indicator.ReferenceID, args.Id);
+                var localUser = world.LocalUser;
+                var localUserGlobalPos = localUser.LocalUserSpace.GlobalPosition;
+                localUser.GetPointInFrontOfUser(out float3 spawnPoint, out floatQ rotation);
 
-            indicatorSlot.OnPrepareDestroy += OnSlotPrepareDestroy;
+                indicator.Spawn(spawnPoint, 0.05f, true);
+                indicator.UpdateProgress(0.0f, $"Importing {fileTypeName}", string.Empty);
+
+                IdToIndicatorDictionary.TryAdd(id, indicator.ReferenceID);
+                IndicatorToIdDictionary.TryAdd(indicator.ReferenceID, id);
+
+                indicatorSlot.OnPrepareDestroy += OnSlotPrepareDestroy;
+            }, true);
         }
 
         private static void UpdateIndicator(object _, Utf8ImportProgressEventArgs args)

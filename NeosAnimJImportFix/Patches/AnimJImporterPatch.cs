@@ -32,20 +32,19 @@ namespace JworkzNeosMod.Patches
             var bytes = Encoding.UTF8.GetBytes(json);
             var readerId = new FileId(FileId.UTF8_JSON_FILE_TYPE, bytes.Length);
             var world = Engine.Current.WorldManager.FocusedWorld;
+            var fileSize = bytes.Length;
+            
             try
             {
                 var reader = new Utf8JsonReader(bytes);
 
-                world.RunSynchronously(() =>
-                    Utf8ImporterEventPublisher.RaiseOnImportStartEvent(null, world, readerId, FILE_TYPE, bytes.Length)
-                );
-
                 Utf8JsonFileProgressWatcher.StartCache(readerId);
+                Utf8ImporterEventPublisher.RaiseOnImportStartEvent(null, world, readerId, FILE_TYPE, fileSize);
 
-                Timer timer = bytes.Length >= MIN_BYTES_TO_REPORT ? new Timer((object _) =>
+                Timer timer = bytes.Length >= fileSize ? new Timer((object _) =>
                 {
                     var consumedBytes = Utf8JsonFileProgressWatcher.GetConsumedBytesFromId(readerId);
-                    Utf8ImporterEventPublisher.RaiseOnImportProgressEvent(null, world, readerId, FILE_TYPE, bytes.Length, consumedBytes);
+                    Utf8ImporterEventPublisher.RaiseOnImportProgressEvent(null, world, readerId, FILE_TYPE, fileSize, consumedBytes);
                 }, FILE_TYPE, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(2)) : null;
 
                 var jsonObj = JsonSerializer.Deserialize<CodeX.Animation>(ref reader, new JsonSerializerOptions
@@ -56,7 +55,7 @@ namespace JworkzNeosMod.Patches
                 timer?.Dispose();
                 Utf8JsonFileProgressWatcher.StopCache(readerId);
 
-                Utf8ImporterEventPublisher.RaiseOnImportFinishEvent(null, world, readerId, FILE_TYPE, bytes.Length);
+                Utf8ImporterEventPublisher.RaiseOnImportFinishEvent(null, world, readerId, FILE_TYPE, fileSize);
 
                 __result = AnimJImporter.CreateFrom(jsonObj);
             }
@@ -64,7 +63,7 @@ namespace JworkzNeosMod.Patches
             {
                 __result = null;
                 NeosMod.Error(e.Message);
-                Utf8ImporterEventPublisher.RaiseOnImportFailEvent(null, world, readerId, FILE_TYPE, bytes.LongLength, e.Message);
+                Utf8ImporterEventPublisher.RaiseOnImportFailEvent(null, world, readerId, FILE_TYPE, fileSize, e.Message);
                 throw;
             }
 
