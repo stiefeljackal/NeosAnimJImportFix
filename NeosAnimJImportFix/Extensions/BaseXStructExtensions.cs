@@ -17,13 +17,27 @@ namespace JworkzNeosMod.Extensions
         public static readonly IEnumerable<float> DEFAULT_RGBA_ARGS =
             new float[] { DEFAULT_R, DEFAULT_G, DEFAULT_B, DEFAULT_A }.AsEnumerable();
 
+        public static readonly IEnumerable<float> DEFAULT_FLOAT_ARGS =
+            new float[] { 0f, 0f, 0f, 0f };
+
         public static color ToColorValue(this IEnumerable<float> values) =>
             values.Cast<float?>().ToColorValue();
-        
-        public static color ToColorValue(this IEnumerable<float?> values)
+
+        public static color ToColorValue(this IEnumerable<float?> values) =>
+            new color(values.ToFloat4Value(DEFAULT_RGBA_ARGS.Cast<float?>()));
+
+        public static floatQ ToFloatQValue(this float4 value) =>
+            new floatQ(value.x, value.y, value.z, value.w);
+
+        public static floatQ ToFloatQValue(this IEnumerable<float?> values) =>
+            values.ToFloat4Value(DEFAULT_FLOAT_ARGS.Cast<float?>()).ToFloatQValue();
+
+        public static float4 ToFloat4Value(this IEnumerable<float?> values, IEnumerable<float?> defaultValues)
         {
+            if (defaultValues== null) { defaultValues = DEFAULT_FLOAT_ARGS.Cast<float?>(); }
+
             var valuesArr = values.ToArray();
-            var resultArgs = DEFAULT_RGBA_ARGS.ToArray();
+            var resultArgs = defaultValues.ToArray();
 
             for (var i = 0; i < valuesArr.Length; i++)
             {
@@ -34,12 +48,12 @@ namespace JworkzNeosMod.Extensions
                 }
             }
 
-            var r = resultArgs[0];
-            var g = resultArgs[1];
-            var b = resultArgs[2];
-            var a = resultArgs[3];
+            var x = resultArgs[0].Value;
+            var y = resultArgs[1].Value;
+            var z = resultArgs[2].Value;
+            var w = resultArgs[3].Value;
 
-            return new color(r, g, b, a);
+            return new float4(x, y, z, w);
         }
     }
 }

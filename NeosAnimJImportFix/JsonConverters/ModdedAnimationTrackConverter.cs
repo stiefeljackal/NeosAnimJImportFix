@@ -22,6 +22,7 @@ namespace JworkzNeosMod.JsonConverters
             TRACK_SERIALIZER_OPTS = new JsonSerializerOptions();
 
             var converters = TRACK_SERIALIZER_OPTS.Converters;
+            converters.Add(new FloatQJsonConverter());
             converters.Add(new ColorJsonConverter());
             converters.Add(new Color32JsonConverter());
 
