@@ -2,6 +2,7 @@
 using CodeX;
 using FrooxEngine;
 using HarmonyLib;
+using NeosModLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace JworkzNeosMod.Patches
 
         private static readonly Regex COMPONENT_FIELD_SPLIT_REGEX = new Regex(@"\.(?!.*?\.)");
 
+        private static readonly Regex COMPONENT_FULLNAME_METADATA_REGEX = new Regex(@"(?:,\s?mscorlib)(?:,\sVersion=(?:\d\.?)+)?(?:,\sCulture=\w+)?(:?,\sPublicKeyToken=\w+)?");
+
         static bool Prefix(ref Task __result, ref Animator __instance, Slot root)
         {
             HashSet<Slot> ignoreSlots = new HashSet<Slot>();
@@ -37,6 +40,8 @@ namespace JworkzNeosMod.Patches
                 if (slot == null) { return null; }
 
                 string[] compFieldNamePair = COMPONENT_FIELD_SPLIT_REGEX.Split(track.Property);
+
+                NeosMod.Msg(compFieldNamePair[0], compFieldNamePair[1]);
 
                 if (compFieldNamePair.Length > MAX_SPLIT_LENGTH)
                 {
@@ -51,7 +56,7 @@ namespace JworkzNeosMod.Patches
 
             var setupFieldsTask = (Task) setupFieldsAsync.Invoke(__instance, new object[] { setupFieldsAsyncCb, ignoreSlots });
             
-            Action startTaskInit = async () => await setupFieldsTask.ConfigureAwait(false);
+            Func<Task> startTaskInit = async () => await setupFieldsTask.ConfigureAwait(false);
             __result = (Task) startTaskDelegate.Invoke(__instance, new object[] { startTaskInit });
 
             return false;
@@ -59,7 +64,11 @@ namespace JworkzNeosMod.Patches
 
         private static IField GetComponentField(Slot slot, string componentTypeName, string componentFieldName)
         {
-            var components = slot.GetComponents<Component>((c) => c.WorkerTypeName == componentTypeName).OrderBy(c => c.UpdateOrder).ToArray();
+            var components = slot.GetComponents<Component>((c) =>
+                c.WorkerTypeName == componentFieldName ||
+                c.WorkerType.GetNiceName() == componentFieldName ||
+                COMPONENT_FULLNAME_METADATA_REGEX.Replace(c.WorkerTypeName, "") == componentTypeName
+            ).OrderBy(c => c.UpdateOrder).ToArray();
             Component foundComponent = null;
 
             for (var i = 0; i < components.Count() && foundComponent == null; i++)
