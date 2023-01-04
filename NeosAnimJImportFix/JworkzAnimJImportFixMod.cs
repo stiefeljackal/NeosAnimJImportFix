@@ -9,16 +9,16 @@ using JworkzNeosMod.Watchers;
 
 namespace JworkzNeosMod
 {
-    public class NeosAnimJImportFixMod : NeosMod
+    public class JworkzAnimJImportFixMod : NeosMod
     {
-        public override string Name => nameof(NeosAnimJImportFixMod);
+        public override string Name => nameof(JworkzAnimJImportFixMod);
         public override string Author => "Stiefel Jackal";
         public override string Version => "1.0.0";
         public override string Link => "https://github.com/stiefeljackal/NeosAnimJImportFixMod";
 
         [AutoRegisterConfigKey]
         private static readonly ModConfigurationKey<bool> KEY_ENABLE =
-            new ModConfigurationKey<bool>("enabled", $"Enables the {nameof(NeosAnimJImportFixMod)} mod", () => true);
+            new ModConfigurationKey<bool>("enabled", $"Enables the {nameof(JworkzAnimJImportFixMod)} mod", () => true);
 
         private static ModConfiguration Config;
 
@@ -36,7 +36,7 @@ namespace JworkzNeosMod
             Config = GetConfiguration();
             Config.OnThisConfigurationChanged += OnConfigurationChanged;
 
-            harmony.PatchAll();
+            RefreshMod();
         }
 
         private void RefreshMod()
