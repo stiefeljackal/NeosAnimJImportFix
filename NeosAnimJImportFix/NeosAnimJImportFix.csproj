@@ -19,6 +19,11 @@
     <DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
     <AssemblyName>JworkzNeosAnimJImportFix</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Abstract\**" />
+    <EmbeddedResource Remove="Abstract\**" />
+    <None Remove="Abstract\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="FrooxEngine">
@@ -53,10 +58,6 @@
 	<Reference Include="System.Threading.Tasks.Extensions">
 		<HintPath>$(NeosPath)\System.Threading.Tasks.Extensions.dll</HintPath>
 	</Reference>
-  </ItemGroup>
-	
-  <ItemGroup>
-    <Folder Include="Abstract\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
