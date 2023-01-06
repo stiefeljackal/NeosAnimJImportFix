@@ -63,8 +63,8 @@ namespace JworkzNeosMod.Patches
         private static IField GetComponentField(Slot slot, string componentTypeName, string componentFieldName)
         {
             var components = slot.GetComponents<Component>((c) =>
-                c.WorkerTypeName == componentFieldName ||
-                c.WorkerType.GetNiceName() == componentFieldName ||
+                c.WorkerTypeName == componentTypeName ||
+                c.WorkerType.GetNiceName() == componentTypeName ||
                 COMPONENT_FULLNAME_METADATA_REGEX.Replace(c.WorkerTypeName, "") == componentTypeName
             ).OrderBy(c => c.UpdateOrder).ToArray();
             Component foundComponent = null;
