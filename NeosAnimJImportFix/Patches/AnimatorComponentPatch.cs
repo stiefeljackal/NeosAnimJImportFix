@@ -41,8 +41,6 @@ namespace JworkzNeosMod.Patches
 
                 string[] compFieldNamePair = COMPONENT_FIELD_SPLIT_REGEX.Split(track.Property);
 
-                NeosMod.Msg(compFieldNamePair[0], compFieldNamePair[1]);
-
                 if (compFieldNamePair.Length > MAX_SPLIT_LENGTH)
                 {
                     throw new Exception("Invalid Property Path: " + track.Property);
