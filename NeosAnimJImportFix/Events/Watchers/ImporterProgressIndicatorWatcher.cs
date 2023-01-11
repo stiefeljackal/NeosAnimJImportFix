@@ -38,6 +38,8 @@ namespace JworkzNeosMod.Watchers
             var id = args.Id;
             var fileTypeName = args.FileTypeName;
 
+            Utf8JsonFileProgressWatcher.StartCache(id);
+
             world.RunSynchronously(() =>
             {
                 if (!Utf8JsonFileProgressWatcher.IsWatchingFile(id)) { return; }
@@ -69,15 +71,31 @@ namespace JworkzNeosMod.Watchers
 
         private static void CompleteIndicator(object _, Utf8ImportFinishEventArgs args)
         {
-            var indicator = GetProgressIndicator(args.Id, args.World);
-            indicator?.ProgressDone($"{args.FileTypeName} has been imported!");
-            RemoveIndicatorCache(indicator.ReferenceID);
+            ResolveIndicator(args.Id, args.World, args.FileTypeName);
         }
 
         private static void FailIndicator(object _, Utf8ImportFailEventArgs args)
         {
-            var indicator = GetProgressIndicator(args.Id, args.World);
-            indicator?.ProgressFail($"Failed to import {args.FileTypeName}: {args.ErrorMessage}");
+            ResolveIndicator(args.Id, args.World, args.FileTypeName, true, args.ErrorMessage);
+        }
+
+        private static void ResolveIndicator(FileId fileId, World world, string fileTypeName, bool isError = false, string message = "")
+        {
+            var indicator = GetProgressIndicator(fileId, world);
+            Utf8JsonFileProgressWatcher.StopCache(fileId);
+
+            if (indicator == null) { return; }
+
+            if (!isError)
+            {
+                indicator.ProgressDone($"{fileTypeName} has been imported!");
+            }
+            else
+            {
+                indicator.ProgressFail($"Failed to import {fileTypeName}: {message}");
+            }
+
+            RemoveIndicatorCache(indicator.ReferenceID);
         }
 
         private static NeosLogoMenuProgress GetProgressIndicator(FileId id, World world)

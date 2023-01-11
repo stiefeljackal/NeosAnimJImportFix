@@ -27,33 +27,33 @@ namespace JworkzNeosMod.Patches
 
         private const int MIN_BYTES_TO_REPORT = 210000;
 
+        private const int START_AT_SECOND = 7;
+
+        private const int REPORT_INTERNAL_IN_SECONDS = 2;
+
         static bool Prefix(ref AnimX __result, string json)
         {
             var bytes = Encoding.UTF8.GetBytes(json);
             var readerId = new FileId(FileId.UTF8_JSON_FILE_TYPE, bytes.Length);
             var world = Engine.Current.WorldManager.FocusedWorld;
             var fileSize = bytes.Length;
-            
+            var timer = fileSize >= MIN_BYTES_TO_REPORT ? new Timer((object _) =>
+            {
+                NeosMod.Msg("Timer");
+                var consumedBytes = Utf8JsonFileProgressWatcher.GetConsumedBytesFromId(readerId);
+                Utf8ImporterEventPublisher.RaiseOnImportProgressEvent(null, world, readerId, FILE_TYPE, fileSize, consumedBytes);
+            }, FILE_TYPE, TimeSpan.FromSeconds(START_AT_SECOND), TimeSpan.FromSeconds(REPORT_INTERNAL_IN_SECONDS)) : null;
+
             try
             {
                 var reader = new Utf8JsonReader(bytes);
 
-                Utf8JsonFileProgressWatcher.StartCache(readerId);
                 Utf8ImporterEventPublisher.RaiseOnImportStartEvent(null, world, readerId, FILE_TYPE, fileSize);
-
-                Timer timer = bytes.Length >= fileSize ? new Timer((object _) =>
-                {
-                    var consumedBytes = Utf8JsonFileProgressWatcher.GetConsumedBytesFromId(readerId);
-                    Utf8ImporterEventPublisher.RaiseOnImportProgressEvent(null, world, readerId, FILE_TYPE, fileSize, consumedBytes);
-                }, FILE_TYPE, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(2)) : null;
 
                 var jsonObj = JsonSerializer.Deserialize<CodeX.Animation>(ref reader, new JsonSerializerOptions
                 {
                     Converters = { new ModdedAnimationTrackConverter(), new ColorJsonConverter() },
                 });
-
-                timer?.Dispose();
-                Utf8JsonFileProgressWatcher.StopCache(readerId);
 
                 Utf8ImporterEventPublisher.RaiseOnImportFinishEvent(null, world, readerId, FILE_TYPE, fileSize);
 
@@ -65,6 +65,10 @@ namespace JworkzNeosMod.Patches
                 NeosMod.Error(e.Message);
                 Utf8ImporterEventPublisher.RaiseOnImportFailEvent(null, world, readerId, FILE_TYPE, fileSize, e.Message);
                 throw;
+            }
+            finally
+            {
+                timer?.Dispose();
             }
 
             return false;
