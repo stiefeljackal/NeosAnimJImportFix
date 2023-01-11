@@ -58,6 +58,9 @@
 	<Reference Include="System.Threading.Tasks.Extensions">
 		<HintPath>$(NeosPath)\System.Threading.Tasks.Extensions.dll</HintPath>
 	</Reference>
+	<Reference Include="System.Text.Encodings.Web">
+		<HintPath>$(NeosPath)\System.Text.Encodings.Web.dll</HintPath>
+	</Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">

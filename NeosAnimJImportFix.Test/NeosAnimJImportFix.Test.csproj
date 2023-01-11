@@ -71,6 +71,9 @@
     <Reference Include="System.Numerics.Vectors">
       <HintPath>$(NeosPath)\System.Numerics.Vectors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Text.Encodings.Web">
+      <HintPath>$(NeosPath)\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
@@ -85,6 +88,7 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DoubleQJsonConverterUnitTest.cs" />
     <Compile Include="FloatQJsonConverterUnitTest.cs" />
     <Compile Include="ColorJsonConverterUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
