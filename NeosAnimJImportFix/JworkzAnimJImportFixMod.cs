@@ -20,9 +20,9 @@ namespace JworkzNeosMod
         private static readonly ModConfigurationKey<bool> KEY_ENABLE =
             new ModConfigurationKey<bool>("enabled", $"Enables the {nameof(JworkzAnimJImportFixMod)} mod", () => true);
 
-        private static ModConfiguration Config;
+        private static ModConfiguration _config;
 
-        private Harmony harmony;
+        private Harmony _harmony;
 
         public bool IsEnabled { get; private set; }
 
@@ -32,24 +32,24 @@ namespace JworkzNeosMod
         public override void OnEngineInit()
         {
             ImporterProgressIndicatorWatcher.Init();
-            harmony = new Harmony($"jworkz.sjackal.{Name}");
-            Config = GetConfiguration();
-            Config.OnThisConfigurationChanged += OnConfigurationChanged;
+            _harmony = new Harmony($"jworkz.sjackal.{Name}");
+            _config = GetConfiguration();
+            _config.OnThisConfigurationChanged += OnConfigurationChanged;
 
             RefreshMod();
         }
 
         private void RefreshMod()
         {
-            var isEnabled = Config.GetValue(KEY_ENABLE);
+            var isEnabled = _config.GetValue(KEY_ENABLE);
 
             if (isEnabled) { TurnModOn(); }
             else { TurnModOff(); }
         }
 
-        private void TurnModOn() => harmony.PatchAll();
+        private void TurnModOn() => _harmony.PatchAll();
 
-        private void TurnModOff() => harmony.UnpatchAll(harmony.Id);
+        private void TurnModOff() => _harmony.UnpatchAll(_harmony.Id);
 
         private void OnConfigurationChanged(ConfigurationChangedEvent @event) => RefreshMod();
 
