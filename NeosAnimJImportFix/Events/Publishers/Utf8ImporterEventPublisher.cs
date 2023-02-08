@@ -18,8 +18,8 @@ namespace JworkzNeosMod.Events.Publishers
 
         public static event EventHandler<Utf8ImportFailEventArgs> OnImportFail;
 
-        public static void RaiseOnImportStartEvent(object source, World world, FileId id, string fileTypeName, long byteSize) =>
-            OnImportStart?.Invoke(source, new Utf8ImportStartEventArgs(world, id, fileTypeName, byteSize));
+        public static void RaiseOnImportStartEvent(object source, World world, User user, FileId id, string fileTypeName, long byteSize) =>
+            OnImportStart?.Invoke(source, new Utf8ImportStartEventArgs(world, user, id, fileTypeName, byteSize));
 
         public static void RaiseOnImportProgressEvent(object source, World world, FileId id, string fileTypeName, long byteSize, long readSize) =>
             OnImportProgress?.Invoke(source, new Utf8ImportProgressEventArgs(world, id, fileTypeName, byteSize, readSize));
