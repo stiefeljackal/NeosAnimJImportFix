@@ -12,15 +12,19 @@ namespace JworkzNeosMod.Events
     internal class Utf8ImportStartEventArgs
     {
         public World World { get; }
+
+        public User User { get; }
+
         public string FileTypeName { get; }
 
         public FileId Id { get; }
 
         public long ByteSize { get; }
 
-        public  Utf8ImportStartEventArgs(World world, FileId id, string fileTypeName, long byteSize)
+        public  Utf8ImportStartEventArgs(World world, User user, FileId id, string fileTypeName, long byteSize)
         {
             World = world;
+            User = user;
             Id = id;
             FileTypeName = fileTypeName;
             ByteSize = byteSize;

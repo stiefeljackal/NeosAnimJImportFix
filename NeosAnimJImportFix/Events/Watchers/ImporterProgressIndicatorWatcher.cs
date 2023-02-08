@@ -35,6 +35,7 @@ namespace JworkzNeosMod.Watchers
         private static void SpawnIndicator(object _, Utf8ImportStartEventArgs args)
         {
             var world = args.World;
+            var user = args.User;
             var id = args.Id;
             var fileTypeName = args.FileTypeName;
 
@@ -44,14 +45,13 @@ namespace JworkzNeosMod.Watchers
             {
                 if (!Utf8JsonFileProgressWatcher.IsWatchingFile(id)) { return; }
 
-                var indicatorSlot = world.LocalUserSpace.AddSlot($"Import {fileTypeName} Indicator");
+                var indicatorSlot = user.LocalUserSpace.AddSlot($"Import {fileTypeName} Indicator");
                 indicatorSlot.PersistentSelf = false;
                 NeosLogoMenuProgress indicator = indicatorSlot.AttachComponent<NeosLogoMenuProgress>();
                 indicatorSlot.AttachComponent<DestroyOnUserLeave>().TargetUser.Target = world.LocalUser;
 
-                var localUser = world.LocalUser;
-                var localUserGlobalPos = localUser.LocalUserSpace.GlobalPosition;
-                localUser.GetPointInFrontOfUser(out float3 spawnPoint, out floatQ rotation);
+                var localUserGlobalPos = user.LocalUserSpace.GlobalPosition;
+                user.GetPointInFrontOfUser(out float3 spawnPoint, out floatQ rotation);
 
                 indicator.Spawn(spawnPoint, 0.05f, true);
                 indicator.UpdateProgress(0.0f, $"Importing {fileTypeName}", string.Empty);
