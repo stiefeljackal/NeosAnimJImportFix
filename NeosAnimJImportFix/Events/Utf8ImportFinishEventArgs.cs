@@ -11,6 +11,6 @@ namespace JworkzNeosMod.Events
 {
     internal class Utf8ImportFinishEventArgs : Utf8ImportStartEventArgs
     {
-        public  Utf8ImportFinishEventArgs(World world, FileId id, string fileTypeName, long byteSize) : base(world, id, fileTypeName, byteSize) { }
+        public  Utf8ImportFinishEventArgs(User allocatingUser, FileId id, string fileTypeName, long byteSize) : base(allocatingUser, id, fileTypeName, byteSize) { }
     }
 }

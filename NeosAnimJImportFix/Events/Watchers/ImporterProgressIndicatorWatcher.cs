@@ -35,7 +35,7 @@ namespace JworkzNeosMod.Watchers
         private static void SpawnIndicator(object _, Utf8ImportStartEventArgs args)
         {
             var world = args.World;
-            var user = args.User;
+            var user = args.AllocatingUser;
             var id = args.Id;
             var fileTypeName = args.FileTypeName;
 
