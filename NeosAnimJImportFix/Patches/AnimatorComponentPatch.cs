@@ -28,11 +28,9 @@ namespace JworkzNeosMod.Patches
 
         private static readonly Regex COMPONENT_FULLNAME_METADATA_REGEX = new Regex(@"(?:,\s?mscorlib)(?:,\sVersion=(?:\d\.?)+)?(?:,\sCulture=\w+)?(:?,\sPublicKeyToken=\w+)?");
 
-        static bool Prefix(ref Task __result, ref Animator __instance, Slot root)
+        static bool Prefix(ref Task __result, Animator __instance, Slot root)
         {
             HashSet<Slot> ignoreSlots = new HashSet<Slot>();
-            var startTaskDelegate = AccessTools.Method(typeof(Animator), "StartTask", new[] { typeof(Func<Task>) });
-            var setupFieldsAsync = AccessTools.Method(typeof(Animator), "SetupFieldsAsync", new[] { typeof(Func<BaseX.AnimationTrack, IField>), typeof(HashSet<Slot>) });
 
             Func<BaseX.AnimationTrack, IField> setupFieldsAsyncCb = (BaseX.AnimationTrack track) =>
             {
@@ -51,13 +49,15 @@ namespace JworkzNeosMod.Patches
                     : slot.TryGetField(compFieldNamePair[SLOT_FIELD_INDEX]);
 
             };
-
-            var setupFieldsTask = (Task) setupFieldsAsync.Invoke(__instance, new object[] { setupFieldsAsyncCb, ignoreSlots });
-            
-            Func<Task> startTaskInit = async () => await setupFieldsTask.ConfigureAwait(false);
-            __result = (Task) startTaskDelegate.Invoke(__instance, new object[] { startTaskInit });
+            __result = __instance.StartTask(() => StartSetupFieldsAsync(ref __instance, ignoreSlots, setupFieldsAsyncCb));
 
             return false;
+        }
+
+        private static Task StartSetupFieldsAsync(ref Animator animator, HashSet<Slot> ignoreSlots, Func<BaseX.AnimationTrack, IField> callback)
+        {
+            var setupFieldsAsync = AccessTools.Method(typeof(Animator), "SetupFieldsAsync", new[] { typeof(Func<BaseX.AnimationTrack, IField>), typeof(HashSet<Slot>) });
+            return (Task) setupFieldsAsync.Invoke(animator, new object[] { callback, ignoreSlots });
         }
 
         private static IField GetComponentField(Slot slot, string componentTypeName, string componentFieldName)
