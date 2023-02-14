@@ -15,7 +15,7 @@ namespace JworkzNeosMod.Events
 
         public float Percent => (float)Math.Round(ReadSize / (double)ByteSize * 100d);
 
-        public  Utf8ImportProgressEventArgs(World world, FileId id, string fileTypeName, long byteSize, long readSize) : base(world, id, fileTypeName, byteSize)
+        public  Utf8ImportProgressEventArgs(User allocatingUser, FileId id, string fileTypeName, long byteSize, long readSize) : base(allocatingUser, id, fileTypeName, byteSize)
         {
             ReadSize = readSize;
         }

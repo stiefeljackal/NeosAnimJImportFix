@@ -11,9 +11,9 @@ namespace JworkzNeosMod.Events
 {
     internal class Utf8ImportStartEventArgs
     {
-        public World World { get; }
+        public World World => AllocatingUser?.World;
 
-        public User User { get; }
+        public User AllocatingUser { get; }
 
         public string FileTypeName { get; }
 
@@ -21,10 +21,9 @@ namespace JworkzNeosMod.Events
 
         public long ByteSize { get; }
 
-        public  Utf8ImportStartEventArgs(World world, User user, FileId id, string fileTypeName, long byteSize)
+        public  Utf8ImportStartEventArgs(User allocatingUser, FileId id, string fileTypeName, long byteSize)
         {
-            World = world;
-            User = user;
+            AllocatingUser = allocatingUser;
             Id = id;
             FileTypeName = fileTypeName;
             ByteSize = byteSize;
